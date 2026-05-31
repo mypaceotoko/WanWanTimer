@@ -17,6 +17,8 @@
         <h1 id="app-title">ワンワンタイマー</h1>
         <p class="lead">時間が来たら、かわいいワンちゃんが「ワンワン！」でお知らせします。</p>
 
+        <div class="alarm-banner" id="alarmBanner" role="alert" hidden>ワンワン！時間です！</div>
+
         <div class="dog-timer" aria-live="polite">
           <div class="dog-ears" aria-hidden="true">
             <span></span>
@@ -59,12 +61,21 @@
           <button type="button" data-minutes="10">10分</button>
         </div>
 
+        <div class="volume-control">
+          <label for="volumeInput">鳴き声音量</label>
+          <input id="volumeInput" type="range" min="0" max="1" step="0.05" value="0.7" />
+          <span id="volumeValue">70%</span>
+        </div>
+
+        <button class="alarm-stop-button" id="stopAlarmButton" type="button" hidden>大きな鳴き声停止ボタン</button>
+
         <div class="controls">
           <button class="primary" id="startPauseButton" type="button">スタート</button>
           <button class="secondary" id="resetButton" type="button">リセット</button>
         </div>
 
         <p class="status" id="statusText">お散歩の準備OK！</p>
+        <p class="audio-help" id="audioHelp" hidden></p>
       </section>
     </main>
     <link rel="stylesheet" href="src/styles.css" />
