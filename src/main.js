@@ -1,6 +1,10 @@
 const DEFAULT_SECONDS = 5 * 60;
 const DEFAULT_VOLUME = 0.7;
-const BARK_AUDIO_PATH = './assets/audio/dog-bark.mp3';
+const BARK_AUDIO_PATH = './assets/audio/dog-bark.mp3.m4a';
+const FALLBACK_BARK_AUDIO_PATHS = [
+  './assets/audio/dog-bark.mp3',
+  './assets/audio/dog-bark.m4a',
+];
 
 const timeDisplay = document.querySelector('#timeDisplay');
 const timerForm = document.querySelector('#timerForm');
@@ -26,7 +30,11 @@ let fallbackAudioContext = null;
 let fallbackOscillators = [];
 let fallbackMasterGain = null;
 
-const barkAudio = new Audio(BARK_AUDIO_PATH);
+const barkAudioPaths = [BARK_AUDIO_PATH, ...FALLBACK_BARK_AUDIO_PATHS];
+let activeBarkAudioPathIndex = 0;
+let activeBarkAudioPath = barkAudioPaths[activeBarkAudioPathIndex];
+
+const barkAudio = new Audio(activeBarkAudioPath);
 barkAudio.loop = true;
 barkAudio.preload = 'auto';
 barkAudio.volume = DEFAULT_VOLUME;
@@ -52,6 +60,39 @@ const setAudioHelp = (message = '') => {
 const renderVolume = () => {
   const percent = Math.round(Number(volumeInput.value) * 100);
   volumeValue.textContent = `${percent}%`;
+};
+
+const setBarkAudioSource = (path, index) => {
+  if (activeBarkAudioPath !== path) {
+    barkAudio.src = path;
+  }
+
+  activeBarkAudioPath = path;
+  activeBarkAudioPathIndex = index;
+};
+
+const tryPlayBarkAudio = async ({ muted = false } = {}) => {
+  barkAudio.volume = Number(volumeInput.value);
+
+  for (let offset = 0; offset < barkAudioPaths.length; offset += 1) {
+    const index = (activeBarkAudioPathIndex + offset) % barkAudioPaths.length;
+    const path = barkAudioPaths[index];
+
+    setBarkAudioSource(path, index);
+    barkAudio.muted = muted;
+    barkAudio.currentTime = 0;
+    barkAudio.load();
+
+    try {
+      await barkAudio.play();
+      return path;
+    } catch {
+      barkAudio.pause();
+    }
+  }
+
+  barkAudio.muted = false;
+  return '';
 };
 
 const render = () => {
@@ -143,24 +184,20 @@ const playFallbackBarkPattern = () => {
 };
 
 const unlockAudio = async () => {
-  barkAudio.volume = Number(volumeInput.value);
-  barkAudio.load();
-
   if (audioUnlocked) {
     return;
   }
 
-  try {
-    barkAudio.muted = true;
-    await barkAudio.play();
+  const playablePath = await tryPlayBarkAudio({ muted: true });
+
+  if (playablePath) {
     barkAudio.pause();
     barkAudio.currentTime = 0;
     barkAudio.muted = false;
     audioUnlocked = true;
     setAudioHelp('');
-  } catch {
-    barkAudio.muted = false;
-    setAudioHelp('犬の鳴き声ファイルを assets/audio/dog-bark.mp3 に配置すると、本物のワンワン音で鳴ります。');
+  } else {
+    setAudioHelp('犬の鳴き声ファイルを assets/audio/dog-bark.mp3.m4a に配置すると、本物のワンワン音で鳴ります。dog-bark.mp3 / dog-bark.m4a も代替として利用できます。');
   }
 
   try {
@@ -182,16 +219,15 @@ const stopAlarm = (message = '鳴き声を止めたよ。') => {
 };
 
 const playAlarm = async () => {
-  barkAudio.volume = Number(volumeInput.value);
-  barkAudio.currentTime = 0;
+  const playablePath = await tryPlayBarkAudio();
 
-  try {
-    await barkAudio.play();
+  if (playablePath) {
     setAudioHelp('');
-  } catch {
-    setAudioHelp('assets/audio/dog-bark.mp3 が見つからないため、仮のフォールバック音でお知らせしています。READMEの手順で犬の鳴き声音声を配置してください。');
-    playFallbackBarkPattern();
+    return;
   }
+
+  setAudioHelp('assets/audio/dog-bark.mp3.m4a、dog-bark.mp3、dog-bark.m4a が見つからないため、仮のフォールバック音でお知らせしています。READMEの手順で犬の鳴き声音声を配置してください。');
+  playFallbackBarkPattern();
 };
 
 const announceFinished = () => {
