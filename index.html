@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ワンワンタイマー</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <main class="app-shell" aria-labelledby="app-title">
+      <section class="hero-card">
+        <div class="sparkle sparkle-one">♡</div>
+        <div class="sparkle sparkle-two">✦</div>
+        <p class="eyebrow">かわいく時間管理</p>
+        <h1 id="app-title">ワンワンタイマー</h1>
+        <p class="lead">時間が来たら、かわいいワンちゃんが「ワンワン！」でお知らせします。</p>
+
+        <div class="dog-timer" aria-live="polite">
+          <div class="dog-ears" aria-hidden="true">
+            <span></span>
+            <span></span>
+          </div>
+          <div class="dog-face" id="dogFace">
+            <div class="dog-patches" aria-hidden="true"></div>
+            <div class="eyes" aria-hidden="true">
+              <span></span>
+              <span></span>
+            </div>
+            <div class="cheeks" aria-hidden="true">
+              <span></span>
+              <span></span>
+            </div>
+            <div class="snout" aria-hidden="true">
+              <span class="nose"></span>
+              <span class="mouth"></span>
+            </div>
+            <output class="time-display" id="timeDisplay" aria-label="残り時間">05:00</output>
+          </div>
+        </div>
+
+        <form class="timer-form" id="timerForm">
+          <label>
+            <span>分</span>
+            <input id="minutesInput" type="number" min="0" max="180" value="5" inputmode="numeric" aria-label="分" />
+          </label>
+          <label>
+            <span>秒</span>
+            <input id="secondsInput" type="number" min="0" max="59" value="0" inputmode="numeric" aria-label="秒" />
+          </label>
+          <button class="set-button" type="submit">セット</button>
+        </form>
+
+        <div class="quick-buttons" aria-label="クイック設定">
+          <button type="button" data-minutes="1">1分</button>
+          <button type="button" data-minutes="3">3分</button>
+          <button type="button" data-minutes="5">5分</button>
+          <button type="button" data-minutes="10">10分</button>
+        </div>
+
+        <div class="controls">
+          <button class="primary" id="startPauseButton" type="button">スタート</button>
+          <button class="secondary" id="resetButton" type="button">リセット</button>
+        </div>
+
+        <p class="status" id="statusText">お散歩の準備OK！</p>
+      </section>
+    </main>
+    <link rel="stylesheet" href="src/styles.css" />
+    <script defer src="src/main.js"></script>
+  </body>
+</html>

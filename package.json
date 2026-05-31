@@ -1,0 +1,10 @@
+{
+  "name": "wanwan-timer",
+  "version": "1.0.0",
+  "description": "A cute dog-shaped countdown timer that barks when time is up.",
+  "private": true,
+  "scripts": {
+    "start": "python3 -m http.server 4173",
+    "build": "node --check src/main.js"
+  }
+}
